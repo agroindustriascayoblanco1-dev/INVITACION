@@ -1,4 +1,5 @@
-const SHEET_NAME = "Confirmaciones";
+const SHEET_NAME = "Confirmaciones Graduación";
+const SPREADSHEET_ID = "1lGZ_Y4KkSKNaFY7m9BF8OvOLpqoSy7vuzvG1hhU3LM0";
 
 function doPost(e) {
   try {
@@ -22,9 +23,7 @@ function doPost(e) {
 }
 
 function getSheet_() {
-  // IMPORTANTE: reemplaza este ID por el ID de tu Google Sheet.
-  const spreadsheetId = "REEMPLAZAR_CON_ID_DE_GOOGLE_SHEETS";
-  const spreadsheet = SpreadsheetApp.openById(spreadsheetId);
+  const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
   let sheet = spreadsheet.getSheetByName(SHEET_NAME);
 
   if (!sheet) {
