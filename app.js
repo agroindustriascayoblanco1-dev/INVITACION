@@ -7,12 +7,44 @@ const successText = document.getElementById("successText");
 const editBtn = document.getElementById("editBtn");
 const guestsEl = document.getElementById("guests");
 const guestMenusEl = document.getElementById("guestMenus");
+const phoneEl = document.getElementById("phone");
 
 const MENU_OPTIONS = [
   { name: "Fettuccine Alfredo", description: "Pasta Fettuccine con salsa Alfredo" },
   { name: "Cordón Bleu", description: "Filete de pollo relleno de jamón y queso" },
   { name: "Filete de cerdo", description: "Bañado con salsa de tamarindo" }
 ];
+
+function formatPhone(value) {
+  let digits = String(value || "").replace(/\D/g, "");
+  if (digits.startsWith("504")) digits = digits.slice(3);
+  digits = digits.slice(0, 8);
+
+  if (digits.length > 4) {
+    return `+504 ${digits.slice(0, 4)}-${digits.slice(4)}`;
+  }
+  return `+504 ${digits}`;
+}
+
+phoneEl.addEventListener("input", () => {
+  phoneEl.value = formatPhone(phoneEl.value);
+});
+
+phoneEl.addEventListener("focus", () => {
+  if (!phoneEl.value || phoneEl.value === "+504") {
+    phoneEl.value = "+504 ";
+    requestAnimationFrame(() => {
+      phoneEl.setSelectionRange(phoneEl.value.length, phoneEl.value.length);
+    });
+  }
+});
+
+phoneEl.addEventListener("keydown", (event) => {
+  const protectedLength = 5;
+  if ((event.key === "Backspace" || event.key === "Delete") && phoneEl.selectionStart <= protectedLength) {
+    event.preventDefault();
+  }
+});
 
 function renderGuestMenus() {
   const count = Number(guestsEl.value) || 1;
@@ -33,7 +65,7 @@ function renderGuestMenus() {
     select.dataset.person = String(index + 1);
     select.setAttribute("aria-label", `Menú de la persona ${index + 1}`);
 
-    MENU_OPTIONS.forEach((option, optionIndex) => {
+    MENU_OPTIONS.forEach((option) => {
       const item = document.createElement("option");
       item.value = option.name;
       item.textContent = option.name;
@@ -67,6 +99,15 @@ form.addEventListener("submit", async (event) => {
   event.preventDefault();
   statusEl.textContent = "Guardando confirmación...";
 
+  const phone = formatPhone(phoneEl.value);
+  phoneEl.value = phone;
+
+  if (!/^\+504 \d{4}-\d{4}$/.test(phone)) {
+    statusEl.textContent = "Ingresa los 8 dígitos de tu número de teléfono.";
+    phoneEl.focus();
+    return;
+  }
+
   const menuSelections = [...guestMenusEl.querySelectorAll(".guest-menu-select")].map((select, index) => ({
     person: index + 1,
     menu: select.value
@@ -76,7 +117,7 @@ form.addEventListener("submit", async (event) => {
 
   const payload = {
     name: document.getElementById("name").value.trim(),
-    phone: document.getElementById("phone").value.trim() || "",
+    phone,
     guests: menuSelections.length,
     menu: menuText,
     notes: document.getElementById("notes").value.trim() || "",
