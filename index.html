@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Graduación de Tirsa Lizeth Paz | Invitación</title>
   <meta name="description" content="Invitación digital de graduación de Tirsa Lizeth Paz">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,11 +16,17 @@
 
   <main>
     <section class="hero reveal">
-      <div class="cap">🎓</div>
-      <p class="eyebrow">UNA ETAPA TERMINA · UNA NUEVA COMIENZA</p>
-      <h1>¡Estás invitado!</h1>
-      <p class="intro">A celebrar conmigo este momento tan especial.</p>
+      <p class="eyebrow">INVITACIÓN DE GRADUACIÓN</p>
+      <h1>Una celebración<br>muy especial</h1>
       <div class="graduate-name">TIRSA LIZETH<br><span>PAZ</span></div>
+
+      <div class="hero-menu">
+        <p class="menu-heading">MENÚ DE LA CELEBRACIÓN</p>
+        <div class="hero-dish"><strong>Fettuccine Alfredo</strong><span>Pasta Fettuccine con salsa Alfredo</span></div>
+        <div class="hero-dish"><strong>Cordón Bleu</strong><span>Filete de pollo relleno de jamón y queso</span></div>
+        <div class="hero-dish"><strong>Filete de cerdo</strong><span>Bañado con salsa de tamarindo</span></div>
+      </div>
+
       <div class="date-card">
         <div><strong>FECHA</strong><span>12 de noviembre</span></div>
         <i></i>
@@ -28,30 +34,27 @@
         <i></i>
         <div><strong>LUGAR</strong><span>Restaurante La Cumbre</span></div>
       </div>
-      <a class="primary-btn" href="#rsvp">Confirmar asistencia <span>↓</span></a>
+      <a class="primary-btn" href="#rsvp">Confirmar asistencia</a>
     </section>
 
-    <section class="section reveal">
+    <section class="section reveal intro-section">
       <div class="section-tag">CELEBREMOS JUNTOS</div>
       <h2>Un día para recordar</h2>
-      <p class="muted">
-        Después de esfuerzo, dedicación y muchos momentos compartidos,
-        quiero celebrar este logro con las personas que forman parte de mi historia.
-      </p>
+      <p class="muted">Después de esfuerzo y dedicación, quiero celebrar este logro con las personas que forman parte de mi historia.</p>
     </section>
 
     <section id="rsvp" class="rsvp-card reveal">
-      <div class="section-tag">RSVP</div>
+      <div class="section-tag">CONFIRMACIÓN</div>
       <h2>¿Nos acompañas?</h2>
-      <p class="muted">Completa tus datos para confirmar tu asistencia y elegir tu menú.</p>
+      <p class="muted">Completa tus datos y selecciona el menú de cada persona que asistirá.</p>
 
       <form id="rsvpForm">
         <label>Tu nombre
-          <input id="name" name="name" type="text" placeholder="Escribe tu nombre" required maxlength="100">
+          <input id="name" name="name" type="text" placeholder="Escribe tu nombre" required maxlength="100" autocomplete="name">
         </label>
 
         <label>Teléfono <small>(opcional)</small>
-          <input id="phone" name="phone" type="tel" placeholder="Ej. 9999-9999" maxlength="30">
+          <input id="phone" name="phone" type="tel" placeholder="Ej. 9999-9999" maxlength="30" autocomplete="tel">
         </label>
 
         <label>¿Cuántas personas asistirán?
@@ -66,21 +69,8 @@
         </label>
 
         <fieldset>
-          <legend>Elige tu menú</legend>
-          <div class="menu-grid">
-            <label class="menu-option">
-              <input type="radio" name="menu" value="Fettuccine Alfredo" required>
-              <span class="menu-icon">🍝</span><span><b>Fettuccine Alfredo</b><small>Pasta Fettuccine con salsa Alfredo</small></span>
-            </label>
-            <label class="menu-option">
-              <input type="radio" name="menu" value="Cordón Bleu">
-              <span class="menu-icon">🍽️</span><span><b>Cordón Bleu</b><small>Deliciosa opción para la celebración</small></span>
-            </label>
-            <label class="menu-option">
-              <input type="radio" name="menu" value="Filete de cerdo con salsa de tamarindo">
-              <span class="menu-icon">🥩</span><span><b>Filete de cerdo</b><small>Bañado con salsa de tamarindo</small></span>
-            </label>
-          </div>
+          <legend>Selecciona el menú de cada persona</legend>
+          <div id="guestMenus" class="guest-menus"></div>
         </fieldset>
 
         <label>Observaciones <small>(opcional)</small>
@@ -92,7 +82,7 @@
           <span>Confirmo que asistiré a la celebración.</span>
         </label>
 
-        <button class="primary-btn submit-btn" type="submit">Confirmar mi asistencia ✨</button>
+        <button class="primary-btn submit-btn" type="submit">Confirmar mi asistencia</button>
         <p id="formStatus" class="form-status" role="status"></p>
       </form>
     </section>
@@ -100,7 +90,7 @@
     <section id="success" class="success-card hidden">
       <div class="success-icon">✓</div>
       <div class="section-tag">CONFIRMACIÓN RECIBIDA</div>
-      <h2>¡Te esperamos!</h2>
+      <h2>Te esperamos</h2>
       <p id="successText" class="muted"></p>
       <button id="editBtn" class="secondary-btn">Modificar respuesta</button>
     </section>
@@ -109,13 +99,13 @@
       <div class="section-tag">INFORMACIÓN</div>
       <h2>Detalles del evento</h2>
       <div class="detail-list">
-        <div><span>📅</span><div><b>Fecha</b><p>12 de noviembre</p></div></div>
-        <div><span>🕖</span><div><b>Hora</b><p>6:30 p. m.</p></div></div>
-        <div><span>📍</span><div><b>Lugar</b><p>Restaurante La Cumbre</p></div></div>
+        <div><div><b>Fecha</b><p>12 de noviembre</p></div></div>
+        <div><div><b>Hora</b><p>6:30 p. m.</p></div></div>
+        <div><div><b>Lugar</b><p>Restaurante La Cumbre</p></div></div>
       </div>
     </section>
 
-    <footer>Con cariño · Tirsa Lizeth Paz <span>🎓</span></footer>
+    <footer>Con cariño · Tirsa Lizeth Paz</footer>
   </main>
 
   <script src="config.js"></script>
