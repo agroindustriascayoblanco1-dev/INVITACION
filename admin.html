@@ -8,73 +8,130 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <style>
-    body{padding:25px}.admin{max-width:1100px;margin:auto}.admin-head{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:25px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:25px}.stat{background:white;border:1px solid var(--line);border-radius:18px;padding:20px}.stat b{display:block;font-size:30px}.stat span{color:var(--muted);font-size:12px}.table-wrap{background:white;border:1px solid var(--line);border-radius:18px;overflow:auto}table{width:100%;border-collapse:collapse;min-width:720px}th,td{text-align:left;padding:13px;border-bottom:1px solid var(--line);font-size:12px}th{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}#login{max-width:420px;margin:12vh auto}.danger{color:#a33}.top-actions{display:flex;gap:8px}.secondary-btn{border:0}.login-status{font-size:12px;color:#a33}@media(max-width:650px){.stats{grid-template-columns:1fr}.admin-head{align-items:flex-start;flex-direction:column}}
+    body{padding:25px}.admin{max-width:1100px;margin:auto}.admin-head{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:25px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:25px}.stat{background:white;border:1px solid var(--line);border-radius:18px;padding:20px}.stat b{display:block;font-size:30px}.stat span{color:var(--muted);font-size:12px}.table-wrap{background:white;border:1px solid var(--line);border-radius:18px;overflow:auto}table{width:100%;border-collapse:collapse;min-width:820px}th,td{text-align:left;padding:13px;border-bottom:1px solid var(--line);font-size:12px}th{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.top-actions{display:flex;gap:8px}.secondary-btn{border:0}.status{font-size:12px;color:var(--muted);margin:0 0 18px}.error{color:#a33}@media(max-width:650px){.stats{grid-template-columns:1fr}.admin-head{align-items:flex-start;flex-direction:column}}
   </style>
 </head>
 <body>
 <div class="admin">
-  <div id="login" class="rsvp-card">
-    <div class="section-tag">ADMINISTRACIÓN</div>
-    <h2>Panel de graduación</h2>
-    <p class="muted" style="text-align:left;margin-bottom:20px">Inicia sesión con el usuario autorizado de Supabase.</p>
-    <form id="loginForm">
-      <label>Email<input id="email" type="email" required></label>
-      <label>Contraseña<input id="password" type="password" required></label>
-      <button class="primary-btn" type="submit">Iniciar sesión</button>
-      <p id="loginStatus" class="login-status"></p>
-    </form>
+  <div class="admin-head">
+    <div><div class="section-tag">PANEL DE GRADUACIÓN</div><h1 style="font-size:42px;margin:4px 0">Confirmaciones</h1></div>
+    <div class="top-actions"><button id="refreshBtn" class="secondary-btn">Actualizar</button><button id="exportBtn" class="secondary-btn">Exportar CSV</button></div>
   </div>
 
-  <div id="dashboard" class="hidden">
-    <div class="admin-head">
-      <div><div class="section-tag">PANEL PRIVADO</div><h1 style="font-size:42px;margin:4px 0">Confirmaciones</h1></div>
-      <div class="top-actions"><button id="exportBtn" class="secondary-btn">Exportar CSV</button><button id="logoutBtn" class="secondary-btn">Salir</button></div>
-    </div>
-    <div class="stats">
-      <div class="stat"><b id="statResponses">0</b><span>Confirmaciones</span></div>
-      <div class="stat"><b id="statGuests">0</b><span>Personas confirmadas</span></div>
-      <div class="stat"><b id="statMenus">0</b><span>Menús registrados</span></div>
-    </div>
-    <div class="table-wrap">
-      <table><thead><tr><th>Nombre</th><th>Teléfono</th><th>Personas</th><th>Menú</th><th>Observaciones</th><th>Fecha</th></tr></thead>
-      <tbody id="rows"></tbody></table>
-    </div>
+  <p id="status" class="status">Cargando confirmaciones desde Google Sheets...</p>
+
+  <div class="stats">
+    <div class="stat"><b id="statResponses">0</b><span>Confirmaciones</span></div>
+    <div class="stat"><b id="statGuests">0</b><span>Personas confirmadas</span></div>
+    <div class="stat"><b id="statMenus">0</b><span>Menús registrados</span></div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Nombre</th><th>Teléfono</th><th>Personas</th><th>Menú</th><th>Observaciones</th><th>Confirmado</th><th>Fecha</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="config.js"></script>
 <script>
-const cfg=window.APP_CONFIG||{};
-const sb=(cfg.SUPABASE_URL&&cfg.SUPABASE_PUBLISHABLE_KEY)?supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_PUBLISHABLE_KEY):null;
-const login=document.getElementById("login"),dash=document.getElementById("dashboard"),msg=document.getElementById("loginStatus");
-let records=[];
-async function showDashboard(){
-  if(!sb){msg.textContent="Configura Supabase en config.js.";return}
-  login.classList.add("hidden");dash.classList.remove("hidden");await load();
+const cfg = window.APP_CONFIG || {};
+const statusEl = document.getElementById("status");
+let records = [];
+
+function esc(v){
+  return String(v ?? "").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 }
-async function load(){
-  const {data,error}=await sb.from("graduation_rsvps").select("*").order("created_at",{ascending:false});
-  if(error){alert("No se pudieron cargar los datos: "+error.message);return}
-  records=data||[];
-  document.getElementById("statResponses").textContent=records.length;
-  document.getElementById("statGuests").textContent=records.reduce((s,r)=>s+Number(r.guests||0),0);
-  document.getElementById("statMenus").textContent=records.filter(r=>r.menu).length;
-  document.getElementById("rows").innerHTML=records.map(r=>`<tr><td>${esc(r.name)}</td><td>${esc(r.phone||"—")}</td><td>${r.guests}</td><td>${esc(r.menu)}</td><td>${esc(r.notes||"—")}</td><td>${new Date(r.created_at).toLocaleString("es-HN")}</td></tr>`).join("");
+
+function formatDate(value){
+  if(!value) return "—";
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? esc(value) : d.toLocaleString("es-HN");
 }
-function esc(v){return String(v).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-document.getElementById("loginForm").addEventListener("submit",async e=>{
-  e.preventDefault();msg.textContent="Iniciando sesión...";
-  const {error}=await sb.auth.signInWithPassword({email:email.value,password:password.value});
-  if(error){msg.textContent=error.message;return} await showDashboard();
-});
-document.getElementById("logoutBtn").onclick=async()=>{await sb.auth.signOut();dash.classList.add("hidden");login.classList.remove("hidden")};
-document.getElementById("exportBtn").onclick=()=>{
-  const headers=["Nombre","Telefono","Personas","Menu","Observaciones","Fecha"];
-  const lines=[headers,...records.map(r=>[r.name,r.phone||"",r.guests,r.menu||"",r.notes||"",r.created_at])].map(a=>a.map(x=>`"${String(x).replaceAll('"','""')}"`).join(","));
+
+function load(){
+  if(!cfg.GOOGLE_SHEETS_URL){
+    statusEl.textContent = "No está configurada la URL de Google Sheets.";
+    statusEl.classList.add("error");
+    return;
+  }
+
+  statusEl.textContent = "Cargando confirmaciones desde Google Sheets...";
+  statusEl.classList.remove("error");
+
+  const callback = "googleSheetsAdmin_" + Date.now();
+  const script = document.createElement("script");
+  const timeout = setTimeout(() => {
+    cleanup();
+    statusEl.textContent = "No se pudo cargar Google Sheets. Revisa la implementación del Web App.";
+    statusEl.classList.add("error");
+  }, 15000);
+
+  window[callback] = function(response){
+    clearTimeout(timeout);
+    cleanup();
+
+    if(!response || !response.ok){
+      statusEl.textContent = response?.message || "No se pudieron cargar las confirmaciones.";
+      statusEl.classList.add("error");
+      return;
+    }
+
+    records = Array.isArray(response.records) ? response.records : [];
+    render();
+    statusEl.textContent = `Última actualización: ${new Date().toLocaleString("es-HN")}`;
+  };
+
+  function cleanup(){
+    delete window[callback];
+    script.remove();
+  }
+
+  script.onerror = function(){
+    clearTimeout(timeout);
+    cleanup();
+    statusEl.textContent = "No se pudo conectar con Google Sheets.";
+    statusEl.classList.add("error");
+  };
+
+  script.src = cfg.GOOGLE_SHEETS_URL + "?action=list&callback=" + encodeURIComponent(callback) + "&_=" + Date.now();
+  document.body.appendChild(script);
+}
+
+function render(){
+  document.getElementById("statResponses").textContent = records.length;
+  document.getElementById("statGuests").textContent = records.reduce((sum,r)=>sum + Number(r.guests || 0),0);
+  document.getElementById("statMenus").textContent = records.filter(r=>r.menu).length;
+
+  document.getElementById("rows").innerHTML = records.length
+    ? records.map(r=>`<tr>
+        <td>${esc(r.name)}</td>
+        <td>${esc(r.phone || "—")}</td>
+        <td>${Number(r.guests || 0)}</td>
+        <td>${esc(r.menu || "—")}</td>
+        <td>${esc(r.notes || "—")}</td>
+        <td>${esc(r.confirmed || "—")}</td>
+        <td>${formatDate(r.created_at)}</td>
+      </tr>`).join("")
+    : `<tr><td colspan="7" style="text-align:center;padding:30px">Aún no hay confirmaciones.</td></tr>`;
+}
+
+document.getElementById("refreshBtn").addEventListener("click", load);
+
+document.getElementById("exportBtn").addEventListener("click",()=>{
+  const headers=["Nombre","Telefono","Personas","Menu","Observaciones","Confirmado","Fecha"];
+  const lines=[headers,...records.map(r=>[r.name,r.phone||"",r.guests,r.menu||"",r.notes||"",r.confirmed||"",r.created_at])]
+    .map(row=>row.map(x=>`"${String(x ?? "").replaceAll('"','""')}"`).join(","));
   const blob=new Blob(["\ufeff"+lines.join("\n")],{type:"text/csv;charset=utf-8"});
-  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="confirmaciones-graduacion.csv";a.click();
-};
-if(sb) sb.auth.getSession().then(({data})=>{if(data.session)showDashboard()});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="confirmaciones-graduacion.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+load();
 </script>
 </body>
 </html>
