@@ -24,22 +24,17 @@ form.addEventListener("submit", async (event) => {
       throw new Error("No está configurada la URL de Google Sheets.");
     }
 
-    // Google Apps Script recibe los datos como parámetros de formulario.
+    // Se envía como formulario para evitar preflight CORS con Google Apps Script.
     const body = new URLSearchParams(payload).toString();
-    const response = await fetch(config.GOOGLE_SHEETS_URL, {
+    await fetch(config.GOOGLE_SHEETS_URL, {
       method: "POST",
+      mode: "no-cors",
       headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
       body
     });
 
-    const text = await response.text();
-    let result = {};
-    try { result = JSON.parse(text); } catch (_) {}
-
-    if (!response.ok || result.success === false || result.ok === false) {
-      throw new Error(result.message || "Google Sheets rechazó la confirmación.");
-    }
-
+    // Con no-cors el navegador no permite leer la respuesta del Web App,
+    // por lo que la confirmación visual se muestra cuando la solicitud fue enviada.
     successText.textContent =
       `Gracias, ${payload.name}. Registramos tu asistencia para ${payload.guests} ${
         payload.guests === 1 ? "persona" : "personas"
@@ -51,7 +46,7 @@ form.addEventListener("submit", async (event) => {
   } catch (error) {
     console.error(error);
     statusEl.textContent =
-      "No pudimos guardar la confirmación. Verifica la conexión con Google Sheets e inténtalo nuevamente.";
+      "No pudimos enviar la confirmación. Verifica tu conexión e inténtalo nuevamente.";
   }
 });
 
