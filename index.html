@@ -38,7 +38,7 @@
       <div class="section-tag">CONFIRMACIÓN</div><h2>¿Nos acompañas?</h2><p class="muted">Completa tus datos para confirmar tu asistencia y elegir el menú de cada persona.</p>
       <form id="rsvpForm">
         <label>Tu nombre<input id="name" name="name" type="text" placeholder="Escribe tu nombre" required maxlength="100" autocomplete="name"></label>
-        <label>Teléfono<input id="phone" name="phone" class="phone-input" type="tel" inputmode="numeric" value="+504 " required autocomplete="tel" maxlength="9" aria-describedby="phoneHelp"><small id="phoneHelp">Ingresa los 8 dígitos de tu número.</small></label>
+        <label>Teléfono<input id="phone" name="phone" class="phone-input" type="tel" inputmode="numeric" value="+504 " required autocomplete="tel" maxlength="14" pattern="^\+504 [0-9]{4}-[0-9]{4}$" aria-describedby="phoneHelp"><small id="phoneHelp">Ingresa los 8 dígitos de tu número.</small></label>
         <label>¿Cuántas personas asistirán?<select id="guests" name="guests" required><option value="1">1 persona</option><option value="2">2 personas</option><option value="3">3 personas</option><option value="4">4 personas</option><option value="5">5 personas</option><option value="6">6 personas</option></select></label>
         <fieldset><legend>MENÚ DE LA CELEBRACIÓN</legend><p class="muted">Selecciona el menú de cada persona.</p><div id="guestMenus" class="guest-menus"></div></fieldset>
         <label>Observaciones <small>(opcional)</small><textarea id="notes" name="notes" rows="3" maxlength="300" placeholder="Alergias, acompañantes o alguna indicación..."></textarea></label>
