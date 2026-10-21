@@ -6,37 +6,38 @@ const successCard = document.getElementById("success");
 const successText = document.getElementById("successText");
 const editBtn = document.getElementById("editBtn");
 
-let supabaseClient = null;
-if (config.SUPABASE_URL && config.SUPABASE_PUBLISHABLE_KEY && window.supabase) {
-  supabaseClient = window.supabase.createClient(
-    config.SUPABASE_URL,
-    config.SUPABASE_PUBLISHABLE_KEY
-  );
-}
-
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   statusEl.textContent = "Guardando confirmación...";
 
   const payload = {
     name: document.getElementById("name").value.trim(),
-    phone: document.getElementById("phone").value.trim() || null,
+    phone: document.getElementById("phone").value.trim() || "",
     guests: Number(document.getElementById("guests").value),
-    menu: document.querySelector('input[name="menu"]:checked')?.value,
-    notes: document.getElementById("notes").value.trim() || null,
-    confirmed: document.getElementById("confirmed").checked
+    menu: document.querySelector('input[name="menu"]:checked')?.value || "",
+    notes: document.getElementById("notes").value.trim() || "",
+    confirmed: document.getElementById("confirmed").checked ? "true" : "false"
   };
 
   try {
-    if (supabaseClient) {
-      const { error } = await supabaseClient
-        .from("graduation_rsvps")
-        .insert(payload);
-      if (error) throw error;
-    } else {
-      const demo = JSON.parse(localStorage.getItem("graduation_rsvps_demo") || "[]");
-      demo.push({...payload, created_at: new Date().toISOString()});
-      localStorage.setItem("graduation_rsvps_demo", JSON.stringify(demo));
+    if (!config.GOOGLE_SHEETS_URL) {
+      throw new Error("No está configurada la URL de Google Sheets.");
+    }
+
+    // Google Apps Script recibe los datos como parámetros de formulario.
+    const body = new URLSearchParams(payload).toString();
+    const response = await fetch(config.GOOGLE_SHEETS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+      body
+    });
+
+    const text = await response.text();
+    let result = {};
+    try { result = JSON.parse(text); } catch (_) {}
+
+    if (!response.ok || result.success === false || result.ok === false) {
+      throw new Error(result.message || "Google Sheets rechazó la confirmación.");
     }
 
     successText.textContent =
@@ -50,7 +51,7 @@ form.addEventListener("submit", async (event) => {
   } catch (error) {
     console.error(error);
     statusEl.textContent =
-      "No pudimos guardar la confirmación. Revisa la configuración de Supabase o inténtalo nuevamente.";
+      "No pudimos guardar la confirmación. Verifica la conexión con Google Sheets e inténtalo nuevamente.";
   }
 });
 
