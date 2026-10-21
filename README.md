@@ -1,45 +1,33 @@
 # Invitación Digital de Graduación
 
-Proyecto inicial listo para GitHub Pages + Supabase.
+Proyecto para GitHub Pages con Google Sheets como único almacenamiento de confirmaciones.
 
-## 1. Probar sin Supabase
-Abre `index.html`. El formulario funciona en modo demo y guarda las respuestas en el navegador usando `localStorage`.
+## Backend
 
-## 2. Conectar Supabase
-1. Crea/usa un proyecto de Supabase.
-2. Abre SQL Editor.
-3. Ejecuta `supabase.sql`.
-4. Copia la URL del proyecto y la Publishable Key.
-5. Pégalas en `config.js`.
-
-Ejemplo:
-
-```js
-window.APP_CONFIG = {
-  SUPABASE_URL: "https://TU-PROYECTO.supabase.co",
-  SUPABASE_PUBLISHABLE_KEY: "sb_publishable_..."
-};
-```
-
-Nunca pongas una secret key o service_role key en estos archivos públicos.
-
-## 3. Panel
-Abre `admin.html` y entra con un usuario creado en Supabase Auth.
-
-## 4. Personalización
-En `index.html` puedes cambiar:
-- nombre del graduado
-- fecha
-- hora
-- lugar
-- código de vestimenta
-- opciones de menú
-
-## Estructura
+Las confirmaciones se guardan mediante un Google Apps Script Web App en la hoja **Confirmaciones Graduación**.
 
 - `index.html` — invitación
 - `styles.css` — diseño
-- `app.js` — RSVP
-- `admin.html` — panel administrativo
-- `config.js` — configuración pública de Supabase
-- `supabase.sql` — tabla + RLS
+- `app.js` — formulario RSVP
+- `admin.html` — panel de confirmaciones
+- `config.js` — URL pública del Web App
+- `google-apps-script.gs` — backend para Google Sheets
+
+## Google Sheet
+
+Columnas esperadas:
+
+`Nombre | Teléfono | Personas | Menú | Observaciones | Confirmado | Fecha`
+
+## Despliegue del Web App
+
+El Apps Script debe estar desplegado como aplicación web con:
+
+- Ejecutar como: **Yo**
+- Quién tiene acceso: **Cualquiera**
+
+Después de modificar `google-apps-script.gs`, hay que crear una nueva versión del despliegue para que los cambios lleguen a la URL `/exec`.
+
+## Nota
+
+El panel `admin.html` lee los datos mediante JSONP para evitar depender de Supabase y poder funcionar desde GitHub Pages. La hoja de Google Sheets sigue siendo la fuente principal de datos.
