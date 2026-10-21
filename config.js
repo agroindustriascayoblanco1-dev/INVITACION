@@ -7,5 +7,5 @@
   NO coloques aquí claves privadas, contraseñas ni service_role keys.
 */
 window.APP_CONFIG = {
-  GOOGLE_SHEETS_URL: "https://script.google.com/macros/s/AKfycbyYWXeLc1sAW8JGi-aBgNsyWfyoBf--DpbLJDmMSZnO2fWUHRnK3p16uvFjH881ti734Q/exec"
+  GOOGLE_SHEETS_URL: "https://script.google.com/macros/s/AKfycbymlRKb65Y6pokj6H79vzg_FOuIxKrfJ6hcZOl4UFyYgyyqdI5GyBK3sHMOgt5ZrDl8fg/exec"
 };
