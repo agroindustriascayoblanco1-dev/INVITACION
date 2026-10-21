@@ -13,10 +13,10 @@
     html{-webkit-text-size-adjust:100%;touch-action:manipulation}
     input,select,textarea{font-size:16px!important;-webkit-text-size-adjust:100%}
     .guest-menus{display:grid;gap:10px}.guest-menu-row{border:1px solid #e7dfd3;border-radius:15px;background:#fff;padding:11px 12px}.guest-menu-row label{display:grid;gap:7px;font-size:11px;color:#17151b}.guest-menu-select{font-size:16px!important;min-height:50px!important}.selected-menu-description{margin:6px 2px 0;font-size:10px;line-height:1.4;color:#756f78}
-    .graduation-mark{width:54px;height:38px;margin:2px auto 12px;color:var(--gold);opacity:.82}
-    .graduation-mark svg{width:100%;height:100%;display:block;overflow:visible}
-    .graduation-mark .cap-fill{fill:none;stroke:currentColor;stroke-width:1.25;stroke-linejoin:round}
-    .graduation-mark .cap-detail{fill:none;stroke:currentColor;stroke-width:1.05;stroke-linecap:round;stroke-linejoin:round}
+    .graduation-mark{width:54px;height:38px;margin:2px auto 12px;color:var(--gold);opacity:.82}.graduation-mark svg{width:100%;height:100%;display:block;overflow:visible}.graduation-mark .cap-fill{fill:none;stroke:currentColor;stroke-width:1.25;stroke-linejoin:round}.graduation-mark .cap-detail{fill:none;stroke:currentColor;stroke-width:1.05;stroke-linecap:round;stroke-linejoin:round}
+    .hero-ornament{display:flex;align-items:center;justify-content:center;gap:9px;margin:4px auto 22px;color:var(--gold-light);opacity:.9}.hero-ornament span{display:block;width:48px;height:1px;background:currentColor}.hero-ornament b{font-family:"Playfair Display",serif;font-size:13px;font-weight:500;line-height:1}
+    .tagline{margin:-12px auto 25px;color:var(--muted);font:italic 15px/1.5 "Playfair Display",serif;letter-spacing:.03em}
+    .details{display:none}
     @media(min-width:561px){.guest-menus{grid-template-columns:1fr 1fr}}
   </style>
 </head>
@@ -38,8 +38,9 @@
       </div>
 
       <div class="graduate-name">TIRSA LIZETH<br><span>PAZ</span></div>
+      <p class="tagline">Una meta cumplida, un nuevo comienzo.</p>
 
-      <p class="intro">Con mucha alegría quiero compartir contigo un momento muy especial: la celebración de mi graduación.</p>
+      <div class="hero-ornament" aria-hidden="true"><span></span><b>✦</b><span></span></div>
 
       <div class="date-card">
         <div><strong>FECHA</strong><span>12 de noviembre</span></div>
@@ -74,12 +75,7 @@
 
         <label>¿Cuántas personas asistirán?
           <select id="guests" name="guests" required>
-            <option value="1">1 persona</option>
-            <option value="2">2 personas</option>
-            <option value="3">3 personas</option>
-            <option value="4">4 personas</option>
-            <option value="5">5 personas</option>
-            <option value="6">6 personas</option>
+            <option value="1">1 persona</option><option value="2">2 personas</option><option value="3">3 personas</option><option value="4">4 personas</option><option value="5">5 personas</option><option value="6">6 personas</option>
           </select>
         </label>
 
@@ -93,11 +89,7 @@
           <textarea id="notes" name="notes" rows="3" maxlength="300" placeholder="Alergias, acompañantes o alguna indicación..."></textarea>
         </label>
 
-        <label class="check">
-          <input id="confirmed" type="checkbox" required>
-          <span>Confirmo que asistiré a la celebración.</span>
-        </label>
-
+        <label class="check"><input id="confirmed" type="checkbox" required><span>Confirmo que asistiré a la celebración.</span></label>
         <button class="primary-btn submit-btn" type="submit">Confirmar mi asistencia</button>
         <p id="formStatus" class="form-status" role="status"></p>
       </form>
@@ -109,16 +101,6 @@
       <h2>Te esperamos</h2>
       <p id="successText" class="muted"></p>
       <button id="editBtn" class="secondary-btn">Modificar respuesta</button>
-    </section>
-
-    <section class="section details reveal">
-      <div class="section-tag">INFORMACIÓN</div>
-      <h2>Detalles del evento</h2>
-      <div class="detail-list">
-        <div><div><b>Fecha</b><p>12 de noviembre</p></div></div>
-        <div><div><b>Hora</b><p>6:30 p. m.</p></div></div>
-        <div><div><b>Lugar</b><p>Restaurante La Cumbre</p></div></div>
-      </div>
     </section>
 
     <footer>Con cariño · Tirsa Lizeth Paz</footer>
